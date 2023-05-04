@@ -7,7 +7,8 @@ void ret_print(char *token_type);
 void yyerror();
 %}
 
-RESERVED_WORDS          "go to"|exit|if|then|else|case|endcase|"else if"|while|do|endwhile|repeat|until|loop|forever|for|to|by|endfor|input|output|array|node|call|return|stop|end|procedure|true|false|null
+RESERVED_WORDS          "go to"|exit|if|then|else|case|endcase|"else if"|while|do|endwhile|repeat|until|loop|forever|for|to|by|endfor|input|output|array|node|call|return|stop|end|procedure|null
+BOOLEAN                 true|false
 MATH_NOTATIONS          floor|ceil|log|mod
 RELATIONAL_OPS          <|<=|==|:=|!=|>|>=  
 LOGICAL_OPS             and|&&|or|"||"|not|! 
@@ -24,7 +25,8 @@ PARENTHESIS             \(|\)
 BRACKET                 \[|\]
 
 %%
-{RESERVED_WORDS}        { ret_print("RESERVED_WORDS"); }        
+{RESERVED_WORDS}        { ret_print("RESERVED_WORDS"); }
+{BOOLEAN}               { ret_print("BOOLEAN"); }        
 {MATH_NOTATIONS}        { ret_print("MATH_NOTATIONS"); }
 {RELATIONAL_OPS}        { ret_print("RELATIONAL_OPS"); }
 {LOGICAL_OPS}           { ret_print("LOGICAL_OPS"); }  
