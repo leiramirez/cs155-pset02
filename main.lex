@@ -1,28 +1,60 @@
-/* 
- * Sample Scanner1: 
- * Description: Replace the string "username" from standard input 
- *              with the user's login name (e.g. lgao)
- * Usage: (1) $ flex sample1.lex
- *        (2a on Mac OS X) $ gcc lex.yy.c -ll 
- *        (2b on Linux)    $ gcc lex.yy.c -lfl
- *        (3) $ ./a.out
- *            stdin> username
- *	      stdin> Ctrl-D
- * Question: What is the purpose of '%{' and '%}'?
- *           What else could be included in this section?
- */
+%option noyywrap
 
 %{
-/* need this for the call to getlogin() below */
-#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+void ret_print(char *token_type);
+void yyerror();
 %}
 
+RESERVED_WORDS          "go to"|exit|if|then|else|case|endcase|"else if"|while|do|endwhile|repeat|until|loop|forever|for|to|by|endfor|input|output|array|node|call|return|stop|end|procedure|true|false|null
+MATH_NOTATIONS          floor|ceil|log|mod
+RELATIONAL_OPS          <|<=|==|:=|!=|>|>=  
+LOGICAL_OPS             and|&&|or|"||"|not|! 
+ARITHMETIC_OPS          \+|\-|\/|\*|\^      
+IDENTIFIER              [a-zA-Z_][a-zA-Z0-9_]*
+INTEGER                 [0-9]+
+FLOAT                   [0-9]+\.[0-9]+
+LITERAL                 \'[^!']*\'
+ASSIGNMENT              =
+COLON                   :
+SEMICOLON               ;
+COMMA                   ,
+PARENTHESIS             \(|\)
+BRACKET                 \[|\]
+
 %%
-username	printf("%s\n", getlogin());
+{RESERVED_WORDS}        { ret_print("RESERVED_WORDS"); }        
+{MATH_NOTATIONS}        { ret_print("MATH_NOTATIONS"); }
+{RELATIONAL_OPS}        { ret_print("RELATIONAL_OPS"); }
+{LOGICAL_OPS}           { ret_print("LOGICAL_OPS"); }  
+{ARITHMETIC_OPS}        { ret_print("ARITHMETIC_OPS"); }        
+{IDENTIFIER}            { ret_print("IDENTIFIER"); } 
+{INTEGER}               { ret_print("INTEGER"); }
+{FLOAT}                 { ret_print("FLOAT"); }
+{LITERAL}               { ret_print("LITERAL"); }
+{ASSIGNMENT}            { ret_print("ASSIGNMENT"); }
+{COLON}                 { ret_print("COLON"); }
+{SEMICOLON}             { ret_print("SEMICOLON"); }
+{COMMA}                 { ret_print("COMMA"); }
+{PARENTHESIS}           { ret_print("PARENTHESIS"); }
+{BRACKET}               { ret_print("BRACKET"); }
+[ \n\t\r\f]+            /*Eat up whitespace characters*/
+.                       { yyerror("Unrecognized character"); }
 %%
 
-int main()
-{
-  yylex();
+void ret_print(char *token_type){
+  printf("<%s, %s>\n", token_type, yytext);
 }
 
+void yyerror(char *message){
+  printf("%s: %s\n", message, yytext);
+  exit(1);
+}
+
+int main(int argc, char *argv[]){
+  yyin = fopen(argv[1], "r");
+  yylex();
+  fclose(yyin);
+  return 0;
+}
